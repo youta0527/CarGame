@@ -33,9 +33,13 @@ public class CarMove : MonoBehaviour
 
     private float position;
     private float position2;
+    
+    x_text Text;
 
     void Start()
     {
+    x_text.text="x:"+position;
+    
 
     }
     void Update()
@@ -108,5 +112,7 @@ public class CarMove : MonoBehaviour
                 axleInfo.rightWheel.motorTorque = motor;
             }
         }
+        
+        x_text.text="x:"+position;
     }
 }
