@@ -77,11 +77,11 @@ public class CarMove : MonoBehaviour
             motor = maxMotorTorque * Time.deltaTime;
             if (motor < 150) motor = 150;
         }
-        else if(Input.GetKey(KeyCode.B))
+        else if(Input.GetKey(KeyCode.B))//"B"を押せばブレーキ
         {
             motor = -maxMotorTorque* Time.deltaTime * 2;
         }
-        else
+        else//何も押していないとき
         {
             motor = -maxMotorTorque * Time.deltaTime;
             if (motor < 0) motor = 0;
