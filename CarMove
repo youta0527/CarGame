@@ -31,6 +31,7 @@ public class CarMove : MonoBehaviour
     public Transform wheelBRTrans;
     float steering = 0.0f;
     float motor = 0.0f;
+    float Speed;
 
     private GazeAware gazeAware;
 
@@ -44,7 +45,7 @@ public class CarMove : MonoBehaviour
     {
        
         x_text.text = "x:" + position;
-        Speed_text.text = motor + "km/h";
+        Speed_text.text = Speed + "km/h";
         gazeAware = GetComponent<GazeAware>();
     }
     void Update()
@@ -103,6 +104,7 @@ public class CarMove : MonoBehaviour
             else if (position > 800) position2 = 0;
             steering = maxSteeringAngle * position2;
         }
+        Speed=rigid.velocity.magnitude;
 
 
 
@@ -121,7 +123,7 @@ public class CarMove : MonoBehaviour
         }
 
         x_text.text = "x:" + position;  //目線座標の表示
-        Speed_text.text = motor + "km/h";　//スピードの表示
+        Speed_text.text =Speed + "km/h";　//スピードの表示
     }
     void UpdateMeshesPosition()
     {
