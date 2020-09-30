@@ -16,6 +16,7 @@ public class AxleInfo
 
 public class CarMove : MonoBehaviour
 {
+    Rigidbody rigid;
     public List<AxleInfo> axleInfos; // 個々の車軸の情報
     public float maxMotorTorque; //ホイールに適用可能な最大トルク
     public float maxSteeringAngle; // 適用可能な最大ハンドル角度
@@ -43,7 +44,7 @@ public class CarMove : MonoBehaviour
 
     void Start()
     {
-       
+        rigid=GameObject.Find("Jon").GetComponent<Rigidbody>();
         x_text.text = "x:" + position;
         Speed_text.text = Speed + "km/h";
         gazeAware = GetComponent<GazeAware>();
