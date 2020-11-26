@@ -1,0 +1,326 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+
+
+[System.Serializable]
+public class AxleInfo
+{
+    public WheelCollider leftWheel;
+    public WheelCollider rightWheel;
+    public bool motor; //このホイールがエンジンにアタッチされているかどうか
+    public bool steering; // このホイールがハンドルの角度を反映しているかどうか
+}
+
+public class CarMove : MonoBehaviour
+{
+
+    public readonly static CarMove Instance = new CarMove();//シーン間の情報共有
+
+
+    public List<AxleInfo> axleInfos; // 個々の車軸の情報
+    Rigidbody rigid;
+    public Vector3 center = new Vector3(0f, -0.2f, 0f);
+    public float motorTorque; //ホイールに適用可能な最大トルク
+    public float maxSteeringAngle; // 適用可能な最大ハンドル角度
+
+    public WheelCollider wheelFL;
+    public WheelCollider wheelFR;
+    public WheelCollider wheelBL;
+    public WheelCollider wheelBR;
+
+    public Transform wheelFLTrans;
+    public Transform wheelFRTrans;
+    public Transform wheelBLTrans;
+    public Transform wheelBRTrans;
+    float steering = 0.0f;
+    float motor = 0.0f;
+    float Speed;
+    float Speed2;
+    string Gia;
+    float Seconds = 0;
+    float Timer = 0;
+    public static float finishTime;
+    int kai = 0;
+    float saidbreak=0.0f;
+
+
+    float countdown = 6f;
+    int count;
+
+
+
+    private float position;
+    private float position2;
+
+    public TextMeshProUGUI CountDown_text;
+    public TextMeshProUGUI Timer_text;
+
+
+    void Start()
+    {
+        rigid = GameObject.Find("Jon").GetComponent<Rigidbody>();
+        rigid.centerOfMass = center;
+
+        CountDown_text.text = count + "";
+        Timer_text.text = Timer + "";
+
+        topSpeed = 40.0f;
+        SetupGears();
+
+
+
+
+
+    }
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            wheelFLTrans.Rotate(wheelFL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+            wheelFRTrans.Rotate(wheelFR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+            wheelBLTrans.Rotate(0, 0, 0);
+            wheelBRTrans.Rotate(0, 0, 0);
+        }
+        else
+        {
+            //wheelcolliderの回転速度に合わせてタイヤモデルを回転させる
+            wheelFLTrans.Rotate(wheelFL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+            wheelFRTrans.Rotate(wheelFR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+            wheelBLTrans.Rotate(wheelBL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+            wheelBRTrans.Rotate(wheelBR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+        }
+
+        //wheelcolliderの角度に合わせてタイヤモデルを回転する（フロントのみ）
+        wheelFLTrans.localEulerAngles = new Vector3(wheelFLTrans.localEulerAngles.x, wheelFL.steerAngle - wheelFLTrans.localEulerAngles.z, wheelFLTrans.localEulerAngles.z);
+        wheelFRTrans.localEulerAngles = new Vector3(wheelFRTrans.localEulerAngles.x, wheelFR.steerAngle - wheelFRTrans.localEulerAngles.z, wheelFRTrans.localEulerAngles.z);
+
+        UpdateGears();
+    }
+
+    public void FixedUpdate()
+    {
+        if (countdown >= 0)
+        {
+            countdown -= Time.deltaTime;
+            count = (int)countdown;
+            CountDown_text.text = count + "";
+            if (count == 0) CountDown_text.text = "GO";
+        }
+
+
+
+        position = Input.mousePosition.x;
+        Vector3 pos = transform.position;
+        rigid.centerOfMass = center;
+
+        Speed = rigid.velocity.magnitude;
+        Speed2 = rigid.velocity.magnitude;
+        if (countdown <= 0.5f)
+        {
+            Timer += Time.deltaTime;
+            Timer = Timer * 100;
+            Timer = Mathf.Floor(Timer) / 100;
+            CountDown_text.gameObject.SetActive(false);
+
+
+            if (Input.GetMouseButton(0))//アクセル
+            {
+                Gia = "ギア１";
+                motor = motorTorque * Time.deltaTime * (float)10;//ギア1
+
+            }
+            else if (Input.GetMouseButton(1))//ブレーキ
+            {
+                motor -= motorTorque * Time.deltaTime;
+                rigid.centerOfMass =new Vector3(0, 0,1f);
+            }
+            else// 何もしてないとき
+            {
+                motor -= motorTorque * Time.deltaTime*0.1f;
+                if (motor < 0) motor = 0;
+            }
+            if (position < 100) position2 = (float)-1;
+            else if (position < 200) position2 = (float)-0.7;
+            else if (position < 300) position2 = (float)-0.4;
+            else if (position < 400) position2 = (float)-0.2;
+            else if (position < 500) position2 = (float)-0.1;
+            else if (position < 600) position2 = (float)-0.05;
+            else if (position < 850) position2 = (float)0;
+            else if (position < 950) position2 = (float)0.05;
+            else if (position < 1050) position2 = (float)0.3;
+            else if (position < 1150) position2 = (float)0.5;
+            else if (position < 1250) position2 = (float)0.8;
+            else if (position < 1350) position2 = (float)1;
+            steering = maxSteeringAngle * position2;
+
+
+            float Handle = Input.GetAxis("Horizontal");
+            this.transform.Rotate(Vector3.up, 20 * Handle * Time.deltaTime);
+
+
+
+            foreach (AxleInfo axleInfo in axleInfos)
+            {
+                if (axleInfo.steering)
+                {
+                    axleInfo.leftWheel.steerAngle = steering;
+                    axleInfo.rightWheel.steerAngle = steering;
+                }
+                if (axleInfo.motor)
+                {
+                    axleInfo.leftWheel.motorTorque = motor;
+                    axleInfo.rightWheel.motorTorque = motor;
+                }
+            }
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            foreach (AxleInfo axleInfo1 in axleInfos)
+            {
+                if (axleInfo1.motor)
+                {
+                    axleInfo1.leftWheel.motorTorque = 0;
+                    axleInfo1.rightWheel.motorTorque = 0;
+                }
+            }
+        }
+
+        var direction = transform.forward;
+
+        Timer_text.text = Timer + "";
+
+        if (pos.x > -33 && pos.x < -28 && pos.z > -191 && pos.z < -188)
+        {
+            finishTime = Timer;
+            SceneManager.LoadScene("result");
+        }
+
+
+
+
+    }
+    void UpdateMeshesPosition()
+    {
+        Quaternion quat;
+        Vector3 pos;
+        wheelFL.GetWorldPose(out pos, out quat);
+        wheelFR.GetWorldPose(out pos, out quat);
+        wheelBL.GetWorldPose(out pos, out quat);
+        wheelBR.GetWorldPose(out pos, out quat);
+
+        wheelFLTrans.position = pos;
+        wheelFRTrans.position = pos;
+        wheelBLTrans.position = pos;
+        wheelBRTrans.position = pos;
+
+        wheelFLTrans.rotation = quat;
+        wheelFRTrans.rotation = quat;
+        wheelBLTrans.rotation = quat;
+        wheelBRTrans.rotation = quat;
+
+
+    }
+
+    public static float getFinishTime()
+    {
+        return finishTime;
+    }
+
+
+
+    public void SetupGears()
+    {
+        engineForceValues = new float[numberOfGears];
+        gearSpeeds = new float[numberOfGears];
+
+        var tempTopSpeed = topSpeed;
+
+        for (var i = 0; i < numberOfGears; i++)
+        {
+            if (i > 0)
+                gearSpeeds[i] = tempTopSpeed / 4 + gearSpeeds[i - 1];
+            else
+                gearSpeeds[i] = tempTopSpeed / 4;
+
+            tempTopSpeed -= tempTopSpeed / 4;
+        }
+
+        var engineFactort = topSpeed / gearSpeeds[gearSpeeds.Length - 1];
+
+        for (i = 0; i < numberOfGears; i++)
+        {
+            var maxLinearDrag = gearSpeeds[i] * gearSpeeds[i];// * dragMultiplier.z;
+            engineForceValues[i] = maxLinearDrag * engineFactor;
+        }
+    }
+
+   public static float UpdateGear(relativeVelocity Vector3)
+    {
+        currentGear = 0;
+        for (var i = 0; i < numberOfGears - 1; i++)
+        {
+            if (relativeVelocity.z > gearSpeeds[i])
+                currentGear = i + 1;
+        }
+    }
+
+    public static float UpdateFriction(relativeVelocity Vector3)
+    {
+        var sqrVel = relativeVelocity.x * relativeVelocity.x;
+
+        // Add extra sideways friction based on the car's turning velocity to avoid slipping
+        wfc.extremumValue = Mathf.Clamp(300 - sqrVel, 0, 300);
+        wfc.asymptoteValue = Mathf.Clamp(150 - (sqrVel / 2), 0, 150);
+
+        w.collider.sidewaysFriction = wfc;
+        w.collider.forwardFriction = wfc;
+    }
+
+    function CalculateEnginePower(relativeVelocity : Vector3)
+    {
+        if (throttle == 0)
+        {
+            currentEnginePower -= Time.deltaTime * 200;
+        }
+        else if (HaveTheSameSign(relativeVelocity.z, throttle))
+        {
+            normPower = (currentEnginePower / engineForceValues[engineForceValues.Length - 1]) * 2;
+            currentEnginePower += Time.deltaTime * 200 * EvaluateNormPower(normPower);
+        }
+        else
+        {
+            currentEnginePower -= Time.deltaTime * 300;
+        }
+
+        if (currentGear == 0)
+            currentEnginePower = Mathf.Clamp(currentEnginePower, 0, engineForceValues[0]);
+        else
+            currentEnginePower = Mathf.Clamp(currentEnginePower, engineForceValues[currentGear - 1], engineForceValues[currentGear]);
+    }
+
+    function ApplyThrottle(canDrive : boolean, relativeVelocity : Vector3)
+    {
+        if (canDrive)
+        {
+            var throttleForce : float = 0;
+            var brakeForce : float = 0;
+
+            if (HaveTheSameSign(relativeVelocity.z, throttle))
+            {
+                if (!handbrake)
+                    throttleForce = Mathf.Sign(throttle) * currentEnginePower * rigidbody.mass;
+            }
+            else
+                brakeForce = Mathf.Sign(throttle) * engineForceValues[0] * rigidbody.mass;
+
+            rigidbody.AddForce(transform.forward * Time.deltaTime * (throttleForce + brakeForce));
+        }
+    }
+
+}
+
