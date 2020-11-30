@@ -3,8 +3,8 @@
  
  // これらの変数は歯車用であり、配列は比率のリストです。スクリプト
  // 定義されたギア比を使用して、ホイールに適用するトルクを決定します
- var GearRatio : float[];
- var CurrentGear : int = 0;
+    public float[] GearRation=new float[6];
+    public int CurrentGear =0;
  
  // これらの変数は、ホイールとシフトギアにトルクを加えるためだけのものです。
  // 定義された最大および最小エンジンRPMを使用して、スクリプトはどのギアを決定できます
@@ -46,11 +46,11 @@
      FrontRightWheel.steerAngle = 10 * Input.GetAxis("Horizontal");
  }
  
- function ShiftGears() {
+ publiic void ShiftGears() {
      // この機能は車両のギアをシフトし、すべてのギアをループして、どれが
      // エンジンのRPMが目的の範囲内にあります。次に、ギアはこの「適切な」値に設定されます。
      if ( EngineRPM >= MaxEngineRPM ) {
-         var AppropriateGear : int = CurrentGear;
+         var AppropriateGear=CurrentGear;
          
          for ( var i = 0; i < GearRatio.length; i ++ ) {
              if ( FrontLeftWheel.rpm * GearRatio[i] < MaxEngineRPM ) {
