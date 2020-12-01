@@ -9,19 +9,19 @@
  // これらの変数は、ホイールとシフトギアにトルクを加えるためだけのものです。
  // 定義された最大および最小エンジンRPMを使用して、スクリプトはどのギアを決定できます
  //車が入っている必要があります
- var EngineTorque : float = 230.0;
- var MaxEngineRPM : float = 3000.0;
- var MinEngineRPM : float = 1000.0;
- private var EngineRPM : float = 0.0;
+ private float motorTorque = 230.0;
+ private float MaxEngineRPM = 3000.0;
+ private float MinEngineRPM = 1000.0;
+ private float EngineRPM = 0.0;
  
  
  
- function Start () {
+ void Start () {
      // 私は通常、車をより安定させるために重心を変更します。私はこのようにひっくり返す可能性が低いです。
  rigidbody.centerOfMass += Vector3(0, -1, .25);
      }
  
- function Update () {
+ void Update () {
      
          // 2つの車輪の平均RPMに基づいてエンジンRPMを計算し、シフトギア関数を呼び出します
      EngineRPM = (FrontLeftWheel.rpm + FrontRightWheel.rpm)/2 * GearRatio[CurrentGear];
@@ -46,11 +46,11 @@
      FrontRightWheel.steerAngle = 10 * Input.GetAxis("Horizontal");
  }
  
- publiic void ShiftGears() {
+void ShiftGears() {
      // この機能は車両のギアをシフトし、すべてのギアをループして、どれが
      // エンジンのRPMが目的の範囲内にあります。次に、ギアはこの「適切な」値に設定されます。
      if ( EngineRPM >= MaxEngineRPM ) {
-         var AppropriateGear=CurrentGear;
+         int AppropriateGear=CurrentGear;
          
          for ( var i = 0; i < GearRatio.length; i ++ ) {
              if ( FrontLeftWheel.rpm * GearRatio[i] < MaxEngineRPM ) {
