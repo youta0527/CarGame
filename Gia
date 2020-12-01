@@ -49,29 +49,42 @@
 void ShiftGears() {
      // この機能は車両のギアをシフトし、すべてのギアをループして、どれが
      // エンジンのRPMが目的の範囲内にあります。次に、ギアはこの「適切な」値に設定されます。
-     if ( EngineRPM >= MaxEngineRPM ) {
-         int AppropriateGear=CurrentGear;
-         
-         for ( var i = 0; i < GearRatio.length; i ++ ) {
-             if ( FrontLeftWheel.rpm * GearRatio[i] < MaxEngineRPM ) {
-                 AppropriateGear = i;
-                 break;
-             }
-         }
-         
-         CurrentGear = AppropriateGear;
-     }
-     
-     if ( EngineRPM <= MinEngineRPM ) {
-         AppropriateGear = CurrentGear;
-         
-         for ( var j = GearRatio.length-1; j >= 0; j -- ) {
-             if ( FrontLeftWheel.rpm * GearRatio[j] > MinEngineRPM ) {
-                 AppropriateGear = j;
-                 break;
-             }
-         }
-         
-         CurrentGear = AppropriateGear;
-     }
- }
+     if (EngineRPM >= MaxEngineRPM)
+        {
+            int AppropriateGear=CurrentGear;
+
+            for(int i=0; i<6; i++)
+            {
+                if (wheelBL.rpm * GearRation[i] < MaxEngineRPM)
+                {
+                    AppropriateGear = i;
+                    break;
+                }
+            }
+
+            CurrentGear = AppropriateGear;
+
+        }
+
+        if (EngineRPM <= MinEngineRPM)
+        {
+            int AppropriateGear = CurrentGear;
+
+
+            for(var j=5; j>=0; j--)
+            {
+                if (wheelBL.rpm * GearRation[j] > MinEngineRPM)
+                {
+                    AppropriateGear = j;
+                    break;
+                }
+            }
+
+            CurrentGear = AppropriateGear;
+        }
+
+
+
+    }
+
+}
