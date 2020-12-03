@@ -23,6 +23,13 @@ public class CarMove : MonoBehaviour
     public float maxSteeringAngle; // 適用可能な最大ハンドル角度
     public float brakeTorque;
 
+
+
+Spring 350
+Damper 450
+
+
+
     public WheelCollider wheelFL;
     public WheelCollider wheelFR;
     public WheelCollider wheelBL;
