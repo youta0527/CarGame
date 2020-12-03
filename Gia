@@ -48,7 +48,18 @@
  
 void ShiftGears() {
      // この機能は車両のギアをシフトし、すべてのギアをループして、どれが
-     // エンジンのRPMが目的の範囲内にあります。次に、ギアはこの「適切な」値に設定されます。
+     // エンジンのRPMが目的の範囲内にあります。次に、ギアはこの「適切な」値に設定されます
+          //Element0 1
+     Element1 2
+     element2 3
+     Element3 4
+     Element4 5
+     element5 6
+     
+     Max EngineRPM 3000
+     Min EngineRPM 500
+     
+     。
      if (EngineRPM >= MaxEngineRPM)
         {
             int AppropriateGear=CurrentGear;
