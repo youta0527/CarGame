@@ -23,13 +23,6 @@ public class CarMove : MonoBehaviour
     public float maxSteeringAngle; // 適用可能な最大ハンドル角度
     public float brakeTorque;
 
-
-
-Spring 350
-Damper 450
-
-
-
     public WheelCollider wheelFL;
     public WheelCollider wheelFR;
     public WheelCollider wheelBL;
@@ -78,7 +71,6 @@ Damper 450
 
 
 
-
         if (Input.GetKey(KeyCode.Space))//サイドブレーキ
         {
             wheelFLTrans.Rotate(wheelFL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
@@ -121,15 +113,17 @@ Damper 450
         if (Input.GetMouseButton(0))//アクセル（マウスの左クリック）
         {
             motor += motorTorque *Time.deltaTime / GearRation[CurrentGear];
+            if (EngineRPM < 0) motor += motorTorque * Time.deltaTime / GearRation[CurrentGear]*2;
         }
         else if (Input.GetMouseButton(1))//ブレーキ（マウスの右クリック）
         {
-            motor -= motorTorque*Time.deltaTime / GearRation[CurrentGear]*CurrentGear;
+            motor -= motorTorque*Time.deltaTime / GearRation[CurrentGear];
+            if (EngineRPM < 0) motor +=motorTorque*Time.deltaTime/GearRation[CurrentGear];
         }
         else// 何もしてないとき
         {
             motor=0;
-            if (motor < 0) motor = 0;
+            if (EngineRPM < 0) motor += motorTorque * Time.deltaTime / GearRation[CurrentGear];
         }
 
 
@@ -212,9 +206,11 @@ Damper 450
 
    void SiftGears()
     {
+
+        int AppropriateGear;
         if (EngineRPM >= MaxEngineRPM)
         {
-            int AppropriateGear=CurrentGear;
+            AppropriateGear=CurrentGear;
 
             for(int i=0; i<6; i++)
             {
@@ -229,9 +225,9 @@ Damper 450
 
         }
 
-        if (EngineRPM <= MinEngineRPM)
+         if (EngineRPM <= MinEngineRPM)
         {
-            int AppropriateGear = CurrentGear;
+            AppropriateGear = CurrentGear;
 
 
             for(var j=5; j>=0; j--)
