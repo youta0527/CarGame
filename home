@@ -38,7 +38,7 @@ public class CarMove : MonoBehaviour
     public Transform wheelBLTrans;
     public Transform wheelBRTrans;
     float steering = 0.0f;
-    float motor = 0.0f;
+    public float motor = 0.0f;
     float Speed;
     float Speed2;
     string Gia;
@@ -91,7 +91,7 @@ public class CarMove : MonoBehaviour
 
         curve.asymptoteValue = 0.75f;
 
-        curve.stiffness = 1.5f;
+        curve.stiffness = 2.0f;
 
         wheelBL.sidewaysFriction = curve;
         wheelBR.sidewaysFriction = curve;
@@ -136,7 +136,7 @@ public class CarMove : MonoBehaviour
 
         curve.asymptoteValue = 0.75f;
 
-        curve.stiffness = 1.5f;
+        curve.stiffness =2.0f;
 
 
 
@@ -169,6 +169,7 @@ public class CarMove : MonoBehaviour
 
         Speed = rigid.velocity.magnitude;
         Speed2 = rigid.velocity.magnitude;
+
         if (countdown <= 0.5f)
         {
             Timer += Time.deltaTime;
@@ -180,25 +181,24 @@ public class CarMove : MonoBehaviour
 
 
 
-                motor += motorTorque *Time.deltaTime/ GearRation[CurrentGear]* Input.GetAxis("MouseLift");//ギア1
+                motor = motorTorque / GearRation[CurrentGear]* Input.GetAxis("MouseLift");//ギア1
             if (Input.GetMouseButton(0))
             {
                 if (EngineRPM < 0)
                 {
-                    motor += motorTorque * Time.deltaTime / GearRation[CurrentGear] * 10;
+                    motor = motorTorque  / GearRation[CurrentGear] * 10;
                 }
             }
             else if (Input.GetMouseButton(1))
             {
                 if (EngineRPM > 0)
                 {
-                    motor -= motorTorque * Time.deltaTime / GearRation[CurrentGear] * 10;
+                    motor -= motorTorque  / GearRation[CurrentGear] * 10;
                 }
             }
             else
             {
-                motor -= motorTorque * Time.deltaTime / GearRation[CurrentGear];
-                if (Speed== 0) motor = 0;
+                motor = 0;
             }
 
 
@@ -287,37 +287,28 @@ public class CarMove : MonoBehaviour
 
     public void ShiftGears()
     {
-        int AppropriateGear;
+        int AppropriateGear=0;
             if (EngineRPM >= MaxEngineRPM)
             {
                  AppropriateGear = CurrentGear;
 
-                for (int i = 0; i < 6; i++)
-                {
-                    if (wheelBL.rpm * GearRation[i] < MaxEngineRPM)
-                    {
-                        AppropriateGear = i;
-                        break;
-                    }
-                }
+            if (Input.GetKey(KeyCode.W))
+            {
+                AppropriateGear++;
+            }
 
                 CurrentGear = AppropriateGear;
 
             }
 
-            if (EngineRPM <= MinEngineRPM)
+        if (EngineRPM <= MinEngineRPM)
+        {
+            AppropriateGear = CurrentGear;
+
+            if (Input.GetKey(KeyCode.S))
             {
-                 AppropriateGear = CurrentGear;
-
-
-                for (var j = 5; j >= 0; j--)
-                {
-                    if (wheelBL.rpm * GearRation[j] > MinEngineRPM)
-                    {
-                        AppropriateGear = j;
-                        break;
-                    }
-                }
+                AppropriateGear--;
+            }
 
                 CurrentGear = AppropriateGear;
             }
@@ -338,4 +329,5 @@ public class CarMove : MonoBehaviour
     }
 
 }
+
 
