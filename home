@@ -309,6 +309,14 @@ public class CarMove : MonoBehaviour
             {
                 AppropriateGear--;
             }
+                            for (var j = 5; j >= 0; j--)
+                            {
+                                    if (wheelBL.rpm * GearRation[j] > MinEngineRPM*(CurrentGear+1)/2)
+                                        {
+                                            AppropriateGear = j;
+                                            break;
+                                        }
+                             }
 
                 CurrentGear = AppropriateGear;
             }
