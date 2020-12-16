@@ -9,6 +9,7 @@ public class rezalt : MonoBehaviour
     public TextMeshProUGUI finishTime_text;
     public TextMeshProUGUI win_text;
     float Time;
+    float Time2;
 
     // Start is called before the first frame update
     void Start()
@@ -20,12 +21,32 @@ public class rezalt : MonoBehaviour
     void Update()
     {
         Time = CarMove.getFinishTime();
+        Time2=CarMove2.getFinishTime2();
 
         if (Time == 0)
         {
-            finishTime_text.text = "GameOver";
-            win_text.gameObject.SetActive(false);
+            finishTime_text.text = "1P GameOver";
+            win_text.text="2P Win";
         }
-        else finishTime_text.text = Time + "";
+        else if(Time2==0)
+        {
+            finishTime_text.text="2P GameOver";
+            win_text.text="1P Win";
+            
+        }
+        else 
+        {
+            if(Time>Time2)
+            {
+                win_text.text="1P Win";
+                finishTime_text.text = Time + "";
+            }
+            else
+            {
+                win_text.text="2P Win";
+                finishTime_text.text=Time2+"";
+            }
+        
+          
     }
 }
