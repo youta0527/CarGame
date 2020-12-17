@@ -8,8 +8,8 @@ using System;
 [System.Serializable]
 public class CameraPrefs
 {
-    public Camera camera;
-    public Vector2 resolution;
+    public Camera camera;//カメラをアタッチ
+    public Vector2 resolution;//解像度
 }
 
 public class MultiDisplayScript : MonoBehaviour {
