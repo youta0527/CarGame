@@ -1,0 +1,104 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class Ranking : MonoBehaviour
+{
+    private float Time3;
+    private float Time4;
+    float Time_a;
+    private float win02;
+    private float defaultTime = 1000000;
+    private float Ranking01;
+    private float Ranking02;
+    private float Ranking03;
+
+    public TextMeshProUGUI Ranking01_text;
+    public TextMeshProUGUI Ranking02_text;
+    public TextMeshProUGUI Ranking03_text;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        Ranking01 = defaultTime;
+        Ranking02 = defaultTime;
+        Ranking03 = defaultTime;
+        Time3 = CarMove.getFinishTime();
+        Time4 = CarMove2.getFinishTime2();
+
+
+        //読み込み
+        Ranking01 = PlayerPrefs.GetFloat("Ranking01",Ranking01);
+        Ranking02 = PlayerPrefs.GetFloat("Ranking02",Ranking02);
+        Ranking03 = PlayerPrefs.GetFloat("Ranking03",Ranking03);
+
+
+
+        win02 = rezalt.getWin();
+
+        if (win02 == 1) Time_a = Time3;
+        else if (win02 == 2) Time_a = Time4;
+
+
+        if (Time_a > 0)
+        {
+            //1位の処理
+            if (Ranking01 > Time_a)
+            {
+                if (Ranking02 != defaultTime)
+                    Ranking03 = Ranking02;
+
+                if (Ranking01 != defaultTime)
+                    Ranking02 = Ranking01;
+
+                Ranking01 = Time_a;
+
+            }
+            // 2位
+            else if (Ranking02 > Time_a)
+            {
+                if(Ranking02!=defaultTime)
+                    Ranking03 = Ranking02;
+
+
+                Ranking02 = Time_a;
+            }
+            //3位
+            else if (Ranking03 > Time_a)
+            {
+                Ranking03 = Time_a;
+            }
+
+            //セーブ
+            PlayerPrefs.SetFloat("Ranking01", Ranking01);
+            PlayerPrefs.SetFloat("Ranking02", Ranking02);
+            PlayerPrefs.SetFloat("Ranking03", Ranking03);
+            PlayerPrefs.Save();
+
+
+
+            //表示
+            Ranking01_text.text = Ranking01 + "";
+
+            if (Ranking02 == defaultTime)
+                Ranking02_text.text = "No Data";
+            else
+                Ranking02_text.text = Ranking02 + "";
+
+            if (Ranking03 == defaultTime)
+                Ranking03_text.text = "No Data";
+            else
+                Ranking03_text.text = Ranking03 + "";
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
